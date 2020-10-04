@@ -1,11 +1,19 @@
-const express = require("express");
-const app = express();
+require('dotenv').config({path:'.env'})
+const app = require('./config/app')
+const {connectDatabase}= require('./database/config')
+const {appConfig,dbConfig} = require('./config/config')
 
-app.get("/", function (req, res) {
-  res.send({ msg: "Bienvenido Rest App" });
-});
+async function initApp(appConfig,dbConfig) {
+  try {
+    await connectDatabase(dbConfig)
+    app.set('port',appConfig.port)
+    app.listen(app.get('port'),()=>{
+      console.log(`Listen port on: ${app.get("port")}`)
+    })
+  } catch (error) {
+    console.log(error);
+    process.exit(0)
+  }
+}
 
-
-app.listen(5000, function () {
-  console.log("Node server esta ejecutando en el puerto 5000");
-});
+initApp(appConfig,dbConfig)
