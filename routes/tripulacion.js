@@ -4,7 +4,7 @@ const {add, list, getById, deleteById, updateById} = require('../controllers/Tri
 
 router.use(cors())
 
-router.post('/add', ((req, res, next) => {
+router.post('/', ((req, res, next) => {
   try {
     add(req, res, next)
   } catch (error) {
@@ -12,7 +12,7 @@ router.post('/add', ((req, res, next) => {
   }
 }))
 
-router.get("/list", (req, res, next) => {
+router.get("/", (req, res, next) => {
   try {
     list(req, res, next)
   } catch (error) {
@@ -20,7 +20,7 @@ router.get("/list", (req, res, next) => {
   }
 })
 
-router.get("/findById", (req, res, next) => {
+router.get("/:id", (req, res, next) => {
   try {
     getById(req, res, next)
   } catch (error) {
@@ -28,7 +28,7 @@ router.get("/findById", (req, res, next) => {
   }
 })
 
-router.delete("/findByIdAndDelete", (req, res, next) => {
+router.delete("/:id", (req, res, next) => {
   try {
     deleteById(req, res, next)
   } catch (error) {
@@ -36,7 +36,7 @@ router.delete("/findByIdAndDelete", (req, res, next) => {
   }
 })
 
-router.put("/findByIdAndUpdate", (req, res, next) => {
+router.put("/:id", (req, res, next) => {
   try {
     updateById(req, res, next)
   } catch (error) {

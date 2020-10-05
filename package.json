@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js ",
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests/tripulacion.test.js --exit",
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test"
   },
   "repository": "https://github.com/jmunozl/backend-afp-capital.git",
   "author": "Jose Muñoz",
@@ -20,7 +21,11 @@
     "mongoose-paginate-v2": "^1.3.9"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.1.3",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "nyc": "^15.1.0"
   }
 }

@@ -17,3 +17,5 @@ async function initApp(appConfig,dbConfig) {
 }
 
 initApp(appConfig,dbConfig)
+
+module.exports = app

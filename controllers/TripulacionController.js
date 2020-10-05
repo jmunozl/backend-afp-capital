@@ -16,12 +16,12 @@ async function add(req, res, next) {
           if (!tripulacionNombre) {
             models.Tripulacion.create(tripulacionData)
               .then((tripulacion) => {
-                res.status(201).json({status: `La Tripulación '${tripulacion.nombre}' fue creada`})
+                res.status(201).json({message: `La Tripulación '${tripulacion.nombre}' fue creada`})
               }).catch(err => {
-              res.json({'Error creando tripulación': err})
+              res.status(400).json({'Error creando tripulación': err})
             })
           } else {
-            res.status(200).json({message: `La Tripulacion '${tripulacionNombre.nombre}' ya esta registrada`})
+            res.status(200).json({message: `La Tripulación '${tripulacionNombre.nombre}' ya esta registrada`})
           }
         }
       )
@@ -58,13 +58,13 @@ async function list(req, res, next) {
       .then((result) => {
         const {totalTripulaciones} = result;
         if (totalTripulaciones > 0) {
-          res.status(200).json({result});
+          res.status(200).json(result);
         } else {
-          res.status(200).json({message: "No existen tripulaciones registradas"})
+          res.status(404).json({message: "No existen tripulaciones registradas"})
         }
       })
       .catch((err) => {
-        res.json({message: `Error listando tripulaciones ->  ${err}`});
+        res.status(500).json({message: `Error listando tripulaciones ->  ${err}`});
       });
   } catch (error) {
     res.status(500).json({message: `Ocurrio un error -> ${error} `})
@@ -73,18 +73,21 @@ async function list(req, res, next) {
 }
 
 async function getById(req, res, next) {
-
-  const {id} = req.query
+  const {id} = req.params
   try {
 
     if (id === undefined || id === '') {
       res.json({message: 'Error buscando tripulación'})
     } else {
-      const tripulacion = await models.Tripulacion.findById({_id: id}, {__v: 0}).exec()
-      if (tripulacion) {
-        res.status(200).json({tripulacion})
+      if (validateId(id)) {
+        const tripulacion = await models.Tripulacion.findById({_id: id}, {__v: 0}).exec()
+        if (tripulacion) {
+          res.status(200).json(tripulacion)
+        } else {
+          res.status(404).json({message: "No se encontro tripulación"})
+        }
       } else {
-        res.status(200).json({message: "No se encontro tripulación"})
+        res.status(404).json({message: 'Formato ID incorrecto'})
       }
     }
 
@@ -96,7 +99,7 @@ async function getById(req, res, next) {
 
 async function deleteById(req, res, next) {
 
-  const {id} = req.query
+  const {id} = req.params
 
   try {
     if (id === undefined || id === '') {
@@ -107,10 +110,10 @@ async function deleteById(req, res, next) {
         if (tripulacion) {
           res.status(200).json({message: `La Tripulación '${tripulacion.nombre}' ha sido eliminada exitosamente.`})
         } else {
-          res.status(200).json({message: 'No existe tripulación para eliminar'})
+          res.status(404).json({message: 'No existe tripulación para eliminar'})
         }
       } else {
-        res.status(200).json({message: 'Formato ID incorrecto'})
+        res.status(404).json({message: 'Formato ID incorrecto'})
       }
     }
 
@@ -121,8 +124,8 @@ async function deleteById(req, res, next) {
 }
 
 async function updateById(req, res, next) {
-
-  const {id, nombre, cantidad, modelo, costo, velocidadMaxima} = req.body
+  const {id} = req.params
+  const {nombre, cantidad, modelo, costo, velocidadMaxima} = req.body
   const query = {_id: id}
 
   let update = {
@@ -138,18 +141,19 @@ async function updateById(req, res, next) {
       res.json({message: 'Error actualizando tripulación'})
     } else {
       if (validateId(id)) {
+
         await models.Tripulacion.findByIdAndUpdate(query, update)
           .then(tripulacionUpdate => {
             if (tripulacionUpdate !== null) {
               res.status(200).json({message: 'Tripulación actualizada correctamente'})
             } else {
-              res.status(200).json({message: 'Tripulación no existe'})
+              res.status(404).json({message: 'Tripulación no existe'})
             }
           }).catch((err) => {
-            res.json({message: `Error actulizando tripulación ->  ${err}`});
+            res.status(500).json({message: `Error actulizando tripulación ->  ${err}`});
           })
       } else {
-        res.status(200).json({message: 'Formato ID incorrecto'})
+        res.status(404).json({message: 'Formato ID incorrecto'})
       }
     }
   } catch (error) {
